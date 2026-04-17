@@ -1,0 +1,28 @@
+name: Build iOS
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Build App
+        run: |
+          # Ищем, в какой папке лежит проект, и заходим в неё
+          PROJECT_DIR=$(find . -name "pubspec.yaml" -exec dirname {} \;)
+          cd $PROJECT_DIR
+          flutter pub get
+          flutter build ios --release --no-codesign
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app
+          # Этот путь должен вести к собранному приложению
+          path: "**/build/ios/iphoneos/Runner.app"
