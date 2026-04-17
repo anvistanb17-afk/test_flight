@@ -25,4 +25,4 @@ jobs:
         with:
           name: ios-app
           # Этот путь должен вести к собранному приложению
-          path: "**/build/ios/iphoneos/Runner.app"
+          path: "**/payload/Runner.app"
