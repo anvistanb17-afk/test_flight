@@ -10,6 +10,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Добавьте эту строку
 import 'dart:async';
 
 // ПРИМЕЧАНИЕ ДЛЯ IOS 12: 
