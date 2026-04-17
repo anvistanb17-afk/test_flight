@@ -239,14 +239,28 @@ class FullImagePage extends StatelessWidget {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Инициализация Supabase (убедись, что версия пакета в pubspec.yaml не выше 2.x для старых систем)
+  // Загружаем .env файл
+  await dotenv.load(fileName: ".env");
+  
+  // Получаем значения из .env
+  final supabaseUrl = dotenv.env['SUPABASE_URL'];
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
+  
+  // Проверяем наличие переменных
+  if (supabaseUrl == null || supabaseAnonKey == null) {
+    throw Exception('SUPABASE_URL или SUPABASE_ANON_KEY не найдены в .env файле');
+  }
+  
+  // Инициализация Supabase с переменными из .env
   await Supabase.initialize(
-      url: 'https://pwkwpiznnuoyktzgrcce.supabase.co',
-      anonKey: 'sb_publishable_F-Ba1Eo1lzmmWdQxS4EGnA_qSBQcEwi');
-
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey);
+  
+  // Получаем SharedPreferences и проверяем первый запуск
   final prefs = await SharedPreferences.getInstance();
   final bool isFirstRun = prefs.getBool('is_first_run_v31') ?? true;
-
+  
+  // Запускаем приложение
   runApp(ChangeNotifierProvider(
       create: (_) => AppConfig(), 
       child: ChatApp(isFirstRun: isFirstRun)
