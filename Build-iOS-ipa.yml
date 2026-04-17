@@ -1,0 +1,36 @@
+name: Build iOS IPA for TrollStore
+
+on:
+  workflow_dispatch:       # Ручной запуск
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest   # Для iOS нужен macOS!
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Самый важный шаг: сборка БЕЗ подписи
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Create IPA from .app
+        run: |
+          mkdir Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -r app.ipa Payload/
+
+      - name: Upload IPA as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrollStore-App
+          path: app.ipa
