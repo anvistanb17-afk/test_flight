@@ -1,28 +1,24 @@
-name: Build iOS
-on: [push]
+name: Build iOS IPA for TrollStore
+
+on:
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-ipa:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Build App
+      - run: flutter pub get
+      - run: flutter build ios --release --no-codesign
+      - name: Create IPA
         run: |
-          # Ищем, в какой папке лежит проект, и заходим в неё
-          PROJECT_DIR=$(find . -name "pubspec.yaml" -exec dirname {} \;)
-          cd $PROJECT_DIR
-          flutter pub get
-          flutter build ios --release --no-codesign
-          
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+          mkdir Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -r app.ipa Payload/
+      - uses: actions/upload-artifact@v4
         with:
-          name: ios-app
-          # Этот путь должен вести к собранному приложению
-          path: "**/build/ios/iphoneos/Runner.app"
+          name: app.ipa
+          path: app.ipa
