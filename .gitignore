@@ -1,0 +1,59 @@
+# Файлы с окружением
+.env
+.env.*
+!.env.example
+
+# Dart/Flutter
+.DS_Store
+.dart_tool/
+.packages/
+build/
+flutter_*.png
+*.lock
+*.log
+*.iml
+*.iws
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.pid
+*.gz
+*.tmp
+
+# Android
+android/local.properties
+android/.gradle
+android/.idea
+android/*.iml
+android/build/
+android/app/build/
+android/captures/
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/flutter_assets/
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcworkspace/xcshareddata/
+ios/*.xcodeproj/project.xcworkspace/xcuserdata/
+ios/*.xcodeproj/xcuserdata/
+
+# macOS
+macos/Pods/
+macos/Flutter/GeneratedPluginRegistrant.swift
+macos/Flutter/ephemeral/
+macos/*.xcodeproj/xcuserdata/
+macos/*.xcworkspace/xcuserdata/
+
+# Windows
+windows/flutter/generated_plugins.cmake
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugin_registrant.h
+windows/runner/Debug/
+windows/runner/Release/
