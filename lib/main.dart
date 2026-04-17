@@ -240,8 +240,8 @@ void main() async {
   
   // Инициализация Supabase (убедись, что версия пакета в pubspec.yaml не выше 2.x для старых систем)
   await Supabase.initialize(
-      url: 'supabase_url',
-      anonKey: 'supabase_api_or_anon_key ');
+      url: 'https://pwkwpiznnuoyktzgrcce.supabase.co',
+      anonKey: 'sb_publishable_F-Ba1Eo1lzmmWdQxS4EGnA_qSBQcEwi');
 
   final prefs = await SharedPreferences.getInstance();
   final bool isFirstRun = prefs.getBool('is_first_run_v31') ?? true;
