@@ -277,6 +277,15 @@ class FullImagePage extends StatelessWidget {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  
+  
+  // ИНИЦИАЛИЗАЦИЯ УВЕДОМЛЕНИЙ (ДОБАВИТЬ)
+  await NotificationService.init();
+  
+  // Остальной код main()...
+  await dotenv.load(fileName: ".env");
+
   
   // Загружаем .env файл
   await dotenv.load(fileName: ".env");
