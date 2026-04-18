@@ -109,6 +109,27 @@ class DBHelper {
 }
 
 class AppConfig with ChangeNotifier {
+
+final Map<String, int> _unreadCounts = {};
+  
+  int getUnreadCount(String roomId) => _unreadCounts[roomId] ?? 0;
+  
+  void incrementUnread(String roomId) {
+    _unreadCounts[roomId] = (_unreadCounts[roomId] ?? 0) + 1;
+    notifyListeners();
+    
+    int totalUnread = _unreadCounts.values.fold(0, (sum, val) => sum + val);
+    NotificationService.setBadgeCount(totalUnread);
+  }
+  
+  void clearUnread(String roomId) {
+    _unreadCounts.remove(roomId);
+    notifyListeners();
+    
+    int totalUnread = _unreadCounts.values.fold(0, (sum, val) => sum + val);
+    NotificationService.setBadgeCount(totalUnread);
+
+  
   String nickname = "User";
   String userId = "";
   String? pinCode;
