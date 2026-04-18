@@ -422,17 +422,45 @@ class ChatListScreen extends StatelessWidget {
           child: conf.roomPasswords.isEmpty
               ? const EmptyState(text: "Создайте первую комнату")
               : ListView.builder(
-                  itemCount: conf.roomPasswords.length,
-                  itemBuilder: (c, i) {
-                    final room = conf.roomPasswords.keys.elementAt(i);
-                    return ListTile(
-                        leading: CircleAvatar(backgroundColor: conf.themeColor, child: const Icon(Icons.chat_bubble_outline, color: Colors.white)),
-                        title: Text(room),
-                        trailing: IconButton(icon: const Icon(Icons.delete_sweep), onPressed: () => conf.removeRoom(room)),
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage(roomId: room))));
-                  })),
-      floatingActionButton: FloatingActionButton(onPressed: () => _add(context, conf), child: const Icon(Icons.add)),
+  itemCount: conf.roomPasswords.length,
+  itemBuilder: (c, i) {
+    final room = conf.roomPasswords.keys.elementAt(i);
+    final unreadCount = conf.getUnreadCount(room);
+    
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: conf.themeColor, 
+        child: const Icon(Icons.chat_bubble_outline, color: Colors.white)
+      ),
+      title: Text(room),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (unreadCount > 0)
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                unreadCount.toString(),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          IconButton(
+            icon: const Icon(Icons.delete_sweep), 
+            onPressed: () => conf.removeRoom(room)
+          ),
+        ],
+      ),
+      onTap: () {
+        conf.clearUnread(room);
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ChatPage(roomId: room)));
+      },
     );
+  },
+)
   }
   void _add(BuildContext ctx, AppConfig conf) {
     final n = TextEditingController(), p = TextEditingController();
@@ -464,8 +492,26 @@ class _ChatPageState extends State<ChatPage> {
     final conf = Provider.of<AppConfig>(context, listen: false);
     final rKey = "${widget.roomId}_${conf.roomPasswords[widget.roomId]}";
     _sub = Supabase.instance.client.from('messages').stream(primaryKey: ['id']).eq('room_id', rKey).order('created_at', ascending: false).listen((data) {
+          // ПРОВЕРКА НА НОВЫЕ СООБЩЕНИЯ ДЛЯ УВЕДОМЛЕНИЙ
+          if (_displayMsgs.isNotEmpty && data.isNotEmpty) {
+            if (data.first['id'] != _displayMsgs.first['id']) {
+              if (data.first['user_id'] != conf.userId) {
+                NotificationService.showNotification(
+                  id: DateTime.now().millisecondsSinceEpoch.hashCode,
+                  title: "Новое в ${widget.roomId}",
+                  body: "${data.first['username']}: ${data.first['is_image'] == true ? '📷 Фото' : data.first['content']}",
+                );
+                conf.incrementUnread(widget.roomId);
+              }
+            }
+          }
+          
           for (var m in data) { DBHelper.saveLocal(m); }
-          if (mounted) { setState(() => _displayMsgs = data); conf.setOnline(true); }
+          if (mounted) { 
+            setState(() => _displayMsgs = data); 
+            conf.setOnline(true);
+            conf.clearUnread(widget.roomId);
+          }
         }, onError: (e) { if (mounted) conf.setOnline(false); });
   }
 
