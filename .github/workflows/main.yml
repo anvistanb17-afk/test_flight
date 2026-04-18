@@ -21,6 +21,17 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
       
+      - name: Disable code signing in Xcode project
+        run: |
+          # Отключаем подпись для Runner target
+          /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 disabled YES" ios/Runner.xcodeproj/project.pbxproj 2>/dev/null || true
+          sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGNING_ALLOWED = NO/CODE_SIGNING_ALLOWED = YES/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGN_IDENTITY =.*/CODE_SIGN_IDENTITY = ""/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\".*/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM =.*/DEVELOPMENT_TEAM = ""/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER =.*/PROVISIONING_PROFILE_SPECIFIER = ""/g' ios/Runner.xcodeproj/project.pbxproj
+      
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign
       
