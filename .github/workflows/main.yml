@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-ios:
+  build-ipa:
     runs-on: macos-latest
-    
     steps:
       - uses: actions/checkout@v4
       
@@ -19,10 +18,13 @@ jobs:
         with:
           channel: stable
       
-      - run: flutter pub get
-      - run: flutter build ios --release --no-codesign
+      - name: Install dependencies
+        run: flutter pub get
       
-      - name: Create IPA
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+      
+      - name: Create IPA from .app
         run: |
           mkdir Payload
           cp -R build/ios/iphoneos/Runner.app Payload/
@@ -30,5 +32,5 @@ jobs:
       
       - uses: actions/upload-artifact@v4
         with:
-          name: app.ipa
+          name: app-for-trollstore
           path: app.ipa
