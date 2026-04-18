@@ -531,6 +531,19 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+
+
+
+
+                CODE_SIGNING_REQUIRED = NO
+                CODE_SIGNING_ALLOWED = NO
+                CODE_SIGN_IDENTITY = 
+                DEVELOPMENT_TEAM = 
+                PROVISIONING_PROFILE_SPECIFIER =
+
+
+
+
 			};
 			name = Release;
 		};
