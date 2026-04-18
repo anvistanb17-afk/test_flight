@@ -12,7 +12,46 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Добавьте эту строку
 import 'dart:async';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+class NotificationService {
+  static final FlutterLocalNotificationsPlugin _notifications = 
+      FlutterLocalNotificationsPlugin();
+  
+  static Future<void> init() async {
+    const iOS = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      defaultPresentAlert: true,
+      defaultPresentSound: true,
+      defaultPresentBadge: true,
+    );
+    
+    const settings = InitializationSettings(iOS: iOS);
+    await _notifications.initialize(settings);
+  }
+  
+  static Future<void> showNotification({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    const iOSDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentSound: true,
+      presentBadge: true,
+    );
+    
+    const details = NotificationDetails(iOS: iOSDetails);
+    await _notifications.show(id, title, body, details);
+  }
+  
+  static Future<void> setBadgeCount(int count) async {
+    await _notifications.resolvePlatformSpecificImplementation
+        <IOSFlutterLocalNotificationsPlugin>()?.setBadgeCount(count);
+  }
+}
 // ПРИМЕЧАНИЕ ДЛЯ IOS 12: 
 // В файле ios/Runner/Info.plist ОБЯЗАТЕЛЬНО добавь:
 // <key>NSPhotoLibraryUsageDescription</key>
