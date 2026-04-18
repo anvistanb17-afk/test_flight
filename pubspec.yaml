@@ -47,7 +47,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-- .env 
+
   # Если решишь добавить свои картинки/шрифты, раскомментируй ниже:
-  # assets:
+  assets:
+  - .env 
   #   - assets/
