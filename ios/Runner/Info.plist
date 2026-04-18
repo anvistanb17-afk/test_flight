@@ -2,12 +2,34 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
+	<!-- НАСТРОЙКИ УВЕДОМЛЕНИЙ (ДОБАВИТЬ) -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+
+	<!-- РАЗРЕШЕНИЯ ДЛЯ МЕДИА (У ВАС УЖЕ ЕСТЬ) -->
 	<key>NSMicrophoneUsageDescription</key>
-<string>Нам нужен доступ к микрофону для записи голосовых сообщений.</string>
-<key>NSPhotoLibraryUsageDescription</key>
-<string>Нам нужен доступ к галерее для отправки фотографий.</string>
-<key>NSCameraUsageDescription</key>
-<string>Нам нужен доступ к камере для создания снимков.</string><key>CFBundleDevelopmentRegion</key>
+	<string>Нам нужен доступ к микрофону для записи голосовых сообщений.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Нам нужен доступ к галерее для отправки фотографий.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Нам нужен доступ к камере для создания снимков.</string>
+
+	<!-- НАСТРОЙКИ УВЕДОМЛЕНИЙ (ВАЖНО ДЛЯ iOS 12) -->
+	<key>UIUserNotificationSettings</key>
+	<dict>
+		<key>types</key>
+		<array>
+			<string>alert</string>
+			<string>badge</string>
+			<string>sound</string>
+		</array>
+	</dict>
+
+	<!-- ОСНОВНЫЕ НАСТРОЙКИ ПРИЛОЖЕНИЯ (У ВАС УЖЕ ЕСТЬ) -->
+	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Chat</string>
@@ -50,5 +72,6 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
 </dict>
 </plist>
