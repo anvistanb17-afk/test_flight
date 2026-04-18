@@ -21,24 +21,45 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
       
-      - name: Disable code signing in Xcode project
+      - name: Disable code signing completely
         run: |
-          # Отключаем подпись для Runner target
-          /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 disabled YES" ios/Runner.xcodeproj/project.pbxproj 2>/dev/null || true
-          sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGNING_ALLOWED = NO/CODE_SIGNING_ALLOWED = YES/g' ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGN_IDENTITY =.*/CODE_SIGN_IDENTITY = ""/g' ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\".*/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";/g' ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/DEVELOPMENT_TEAM =.*/DEVELOPMENT_TEAM = ""/g' ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER =.*/PROVISIONING_PROFILE_SPECIFIER = ""/g' ios/Runner.xcodeproj/project.pbxproj
+          # Отключаем подпись для всех конфигураций
+          sed -i '' 's/CODE_SIGNING_REQUIRED = YES;/CODE_SIGNING_REQUIRED = NO;/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGNING_ALLOWED = NO;/CODE_SIGNING_ALLOWED = YES;/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGN_IDENTITY = ".*";/CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/DEVELOPMENT_TEAM = .*;/DEVELOPMENT_TEAM = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = .*;/PROVISIONING_PROFILE_SPECIFIER = "";/g' ios/Runner.xcodeproj/project.pbxproj
+          
+          # Добавляем в xcconfig файлы
+          echo "CODE_SIGNING_REQUIRED = NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGNING_ALLOWED = NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGN_IDENTITY = " >> ios/Flutter/Release.xcconfig
+          echo "DEVELOPMENT_TEAM = " >> ios/Flutter/Release.xcconfig
+          echo "PROVISIONING_PROFILE_SPECIFIER = " >> ios/Flutter/Release.xcconfig
+          
+          echo "CODE_SIGNING_REQUIRED = NO" >> ios/Flutter/Debug.xcconfig
+          echo "CODE_SIGNING_ALLOWED = NO" >> ios/Flutter/Debug.xcconfig
+          echo "CODE_SIGN_IDENTITY = " >> ios/Flutter/Debug.xcconfig
+          echo "DEVELOPMENT_TEAM = " >> ios/Flutter/Debug.xcconfig
+          echo "PROVISIONING_PROFILE_SPECIFIER = " >> ios/Flutter/Debug.xcconfig
       
-      - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+      - name: Build with xcodebuild directly
+        run: |
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            build
+          cd ..
       
       - name: Create IPA from .app
         run: |
-          mkdir Payload
-          cp -R build/ios/iphoneos/Runner.app Payload/
+          mkdir -p Payload
+          cp -R ios/build/Release-iphoneos/Runner.app Payload/
           zip -r app.ipa Payload/
       
       - uses: actions/upload-artifact@v4
